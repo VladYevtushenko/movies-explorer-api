@@ -1,5 +1,9 @@
-const { Joi, celebrate } = require('celebrate');
-const urlValidation = require('../utils/urlValidation');
+const { Joi } = require('celebrate');
+const { celebrate } = require('celebrate');
+const { urlValidation } = require('../utils/urlValidation');
+
+// eslint-disable-next-line no-console
+console.log({ urlValidation });
 
 const userInfoValidation = celebrate({
   body: Joi.object().keys({
@@ -36,7 +40,7 @@ const movieInfoValidation = celebrate({
     duration: Joi.number().required(),
     year: Joi.string().length(4).required(),
     description: Joi.string().min(2).required(),
-    image: Joi.string().custom(urlValidation).required(),
+    image: Joi.string().required().custom(urlValidation),
     trailerLink: Joi.string().custom(urlValidation).required(),
     thumbnail: Joi.string().custom(urlValidation).required(),
     movieId: Joi.string().required(),
