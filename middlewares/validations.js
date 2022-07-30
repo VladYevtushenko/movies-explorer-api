@@ -1,9 +1,6 @@
 const Joi = require('joi');
 const { celebrate } = require('celebrate');
-const { urlValidation } = require('../utils/urlValidation');
-
-// eslint-disable-next-line no-console
-console.log({ urlValidation });
+const validator = require('validator');
 
 const userInfoValidation = celebrate({
   body: Joi.object().keys({
@@ -40,9 +37,24 @@ const movieInfoValidation = celebrate({
     duration: Joi.number().required(),
     year: Joi.string().length(4).required(),
     description: Joi.string().min(2).required(),
-    image: Joi.string().required().custom(urlValidation),
-    trailerLink: Joi.string().custom(urlValidation).required(),
-    thumbnail: Joi.string().custom(urlValidation).required(),
+    image: Joi.string().required().custom((value, helpers) => {
+      if (validator.isURL(value)) {
+        return value;
+      }
+      return helpers.message('Поле заполнено не корректно');
+    }),
+    trailerLink: Joi.string().required().custom((value, helpers) => {
+      if (validator.isURL(value)) {
+        return value;
+      }
+      return helpers.message('Поле заполнено не корректно');
+    }),
+    thumbnail: Joi.string().required().custom((value, helpers) => {
+      if (validator.isURL(value)) {
+        return value;
+      }
+      return helpers.message('Поле заполнено не корректно');
+    }),
     movieId: Joi.number().required(),
     nameRU: Joi.string().min(2).max(100).required(),
     nameEN: Joi.string().min(2).max(100).required(),
