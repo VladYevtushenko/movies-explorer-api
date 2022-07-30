@@ -1,4 +1,4 @@
-const { Joi } = require('celebrate');
+const Joi = require('joi');
 const { celebrate } = require('celebrate');
 const { urlValidation } = require('../utils/urlValidation');
 
@@ -43,7 +43,7 @@ const movieInfoValidation = celebrate({
     image: Joi.string().required().custom(urlValidation),
     trailerLink: Joi.string().custom(urlValidation).required(),
     thumbnail: Joi.string().custom(urlValidation).required(),
-    movieId: Joi.string().required(),
+    movieId: Joi.number().required(),
     nameRU: Joi.string().min(2).max(100).required(),
     nameEN: Joi.string().min(2).max(100).required(),
   }),

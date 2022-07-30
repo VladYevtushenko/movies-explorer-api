@@ -6,9 +6,9 @@ const BadRequestError = require('../errors/badRequestError');
 const ConflictError = require('../errors/conflictError');
 const NotFoundError = require('../errors/notFoundError');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
-
 const { inputsError } = require('../utils/inputsError');
+
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 // POST create user
 
@@ -89,13 +89,22 @@ module.exports.editUserInfo = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь по указанному id не найден');
+        next(new NotFoundError('Пользователь по указанному id не найден'));
+        return;
       }
-      res.send(user);
+      res.send({
+        name: user.name,
+        email: user.email,
+      });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError(`Переданы некорректные данные при изменении данных пользователя, неверно указаны данные в полях: ${inputsError(err)}`));
+        return;
+      }
+
+      if (err.code === 11000) {
+        next(new ConflictError('Указаный email принадлежит другому пользователю'));
         return;
       }
       next(err);
