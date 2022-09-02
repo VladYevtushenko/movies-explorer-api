@@ -67,20 +67,14 @@ module.exports.addNewMovie = async (req, res, next) => {
 
 module.exports.deleteMovie = (req, res, next) => {
   Movie.findById(req.params._id)
-    .orFail(() => new NotFoundError('Фильм с указанным id не найдена'))
     .then((movie) => {
-      if (String(movie.owner._id) !== String(req.user._id)) {
+      if (!movie) {
+        throw new NotFoundError('Фильм с указанным id не найдена');
+      } else if (String(movie.owner._id) !== req.user._id) {
         throw new ForbiddenError('Нельзя удалить чужой фильм');
+      } else {
+        return movie.remove()
+          .then(() => res.send({ message: 'Фильм удален' }));
       }
-      Movie.findByIdAndRemove(req.params._id)
-        .then((movieDelete) => res.send(movieDelete))
-        .catch(next);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError(`Неверно указаны данные в полях: ${inputsError(err)}`));
-        return;
-      }
-      next(err);
-    });
+    }).catch(next);
 };
