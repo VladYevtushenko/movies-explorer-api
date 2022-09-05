@@ -115,6 +115,9 @@ module.exports.editUserInfo = (req, res, next) => {
 
 // signout
 
-module.exports.signout = (req, res) => {
-  res.clearCookie('jwt').send({ message: 'Выход' });
+module.exports.signout = (req, res, next) => {
+  res
+    .clearCookie('jwt')
+    .send({ message: 'Выход' })
+    .catch(next);
 };
